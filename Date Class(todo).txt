@@ -1,0 +1,155 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+class Date
+{
+private:
+	int _year;
+	int _month;
+	int _day;
+public:
+	Date(int year = 1980, int month = 1, int day = 1): _year(year),_month(month),_day(day) // 构造函数
+	{
+		if (!IsInvalidDate())//判断是否合法
+		{
+			_year = 1980;
+			_month = 1;
+			_day = 1;
+		}
+	
+	}
+	
+	void Display()
+	{
+		cout << _year << "-" << _month << "-" << _day << endl;
+	}
+
+	Date (const Date & d):_year(d._year), _month(d._month), _day(d._day){}//拷贝函数
+
+	~Date(){}//析构函数
+
+	bool IsInvalidDate()//判断是否是合法日期
+	{
+		if ((_year < 1) || _month < 0 || _day < 0 || _day > YearOfMonth(_year,_month))
+			return false;
+			
+		return true;
+	}
+
+	int YearOfMonth(int year, int month)// 返回某个月的天数 
+	{
+		int day;
+		int days[13] = {0,31,28,31,30,31,30,31,31,30,31,30,31};
+		day = days[month];
+		if (month == 2 && IsLeapYear())
+		{
+			day += 1;
+		}
+		return day;
+	}
+
+	bool IsLeapYear()// 判断是否为闰年
+	{
+		if(_year % 4 == 0 && _year % 100 != 0 || _year % 400 == 0)
+			return true;
+		else
+			return false;
+	}
+	
+	
+
+	void GetYear()
+	{
+		cin >> _year;
+	}
+
+	void GetMonth()
+	{
+		cin >> _month;
+	}
+
+	void GetDay() 
+	{
+		cin >> _day;
+	}
+
+	Date ToCorrect(Date & d)
+	{
+		while (d._day > YearOfMonth(d._year,d._month) || d._day <= 0)
+		{
+			if(d._day <= 0)
+			{
+				d._day += YearOfMonth(d._year,(d._month - 1));
+				if (d._month == 1)
+				{
+					d._month = 12;
+					d._year--;
+				}
+				else
+				{
+					d._month--;
+				}
+			}
+			else
+			{
+				d._day -= YearOfMonth(d._year,d._month);
+				if (d._month == 12)
+				{
+					d._year++;
+					d._month = 1;
+				}
+				else
+				{
+					d._month++;
+				}
+			}
+		}
+		return d;
+	}
+
+	Date operator+(int days)
+	{
+		Date tmp (*this);
+		tmp._day += days;
+		ToCorrect(tmp);
+		return tmp;
+	}
+	
+	Date operator-(int days)
+	{
+		Date tmp (*this);
+		tmp._day -= days;
+		ToCorrect(tmp);
+		return tmp;
+	}
+
+};
+int main(int argc, char const *argv[])
+{
+	cout << "Please enter the start date" << endl;
+	Date d = Date();
+	d.GetYear();
+	d.GetMonth();
+	d.GetDay();
+	assert(d.IsInvalidDate());
+	cout << endl;
+	d.Display();
+	
+	cout << endl;
+	d.IsLeapYear() ? cout << "This is a leap year" << endl : cout << "This isn't a leap year" << endl; 
+	
+	cout << "Please enter the number to be added" << endl;
+	int plus;
+	cin >> plus;
+	Date add = d + plus;
+	add.Display();
+	cout << endl;	
+
+	cout << "Please enter the number to be subtracted" << endl;
+	int sub;
+	cin >> sub;
+	Date jian = d - sub;
+	jian.Display();
+
+	return 0;
+}
